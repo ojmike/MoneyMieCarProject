@@ -1,7 +1,7 @@
 name: Heroku Deployment
 on:
   push:
-    branches: [ Master ]
+    branches: [ master, main ]
 
 jobs:
   deploy-heroku:
