@@ -17,7 +17,7 @@ import java.util.Collections;
 @EnableSwagger2
 public class SwaggerConfiguration implements WebMvcConfigurer {
 
-    // WEBSITE IS - http://localhost:8080/swagger-ui/
+    // WEBSITE IS -https://moneymiecartask.herokuapp.com/swagger-ui/#/
 
     @Bean
     public Docket swaggerConfig() {
