@@ -1,4 +1,4 @@
-package com.moneymie.carproject.controller;
+package com.moneymie.carproject.config;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -10,11 +10,10 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class StartUpService {
-
-    private List<Car> carList;
 
     private final WebClient webClient;
 
@@ -40,14 +39,15 @@ public class StartUpService {
         ObjectMapper objectMapper = new ObjectMapper();
         Car[] pp1 = objectMapper.readValue(jsonString, Car[].class);
 
-        List<Car> items = Arrays.asList(pp1);
+        List<Car> cars = Arrays.asList(pp1);
 
-        items.forEach(car -> carRepository.save(car));
-
-        return items;
-
+        for (Car car:cars) {
+            Optional<Car> carOptional =  carRepository.findByVin(car.getVin());
+            if(carOptional.isEmpty()){
+                carRepository.save(car);
+            }
+        }
+        return cars;
     }
-
-
 
 }

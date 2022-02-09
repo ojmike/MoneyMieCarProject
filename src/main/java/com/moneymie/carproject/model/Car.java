@@ -5,10 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.io.Serializable;
 
 @Getter
@@ -17,16 +14,22 @@ import java.io.Serializable;
 @AllArgsConstructor
 @Entity
 public class Car {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="id")
     private Long id;
 
+    @Column(name="vin")
     private String vin;
 
+    @Column(name="brand")
     private String brand;
 
+    @Column(name="year")
     private int year;
 
+    @Column(name="color")
     private String color;
 
 }

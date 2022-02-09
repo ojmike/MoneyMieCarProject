@@ -1,6 +1,6 @@
 package com.moneymie.carproject;
 
-import com.moneymie.carproject.controller.StartUpService;
+import com.moneymie.carproject.config.StartUpService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;

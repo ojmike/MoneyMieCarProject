@@ -1,10 +1,11 @@
 package com.moneymie.carproject.service.implementation;
 
-import com.moneymie.carproject.controller.StartUpService;
+import com.moneymie.carproject.config.StartUpService;
 import com.moneymie.carproject.exception.ApiBadRequestException;
 import com.moneymie.carproject.exception.ApiResourceNotFoundException;
 import com.moneymie.carproject.model.Car;
 import com.moneymie.carproject.payload.request.AddCarRequest;
+import com.moneymie.carproject.payload.response.CarListResponse;
 import com.moneymie.carproject.payload.response.CarResponse;
 import com.moneymie.carproject.repository.CarRepository;
 import com.moneymie.carproject.service.CarService;
@@ -40,27 +41,30 @@ public class CarServiceImpl implements CarService {
     private static final Logger LOGGER = LoggerFactory.getLogger(CarServiceImpl.class);
 
 
-    public List<Car> findAll() {
+    public CarListResponse findAll() {
 
-        List<Car> items = carRepository.findAll();
+        List<Car> cars = carRepository.findAll();
         Comparator<Car> byType = Comparator.comparing(Car::getBrand);
-        Collections.sort(items, byType);
-        return items;
+        Collections.sort(cars, byType);
+        CarListResponse carListResponse = getCarListResponse(cars);
+        return carListResponse;
     }
 
     public Car getCar(String vin)  {
         return   carRepository.findByVin(vin).orElseThrow(() -> new ApiResourceNotFoundException("Invalid VIN supplied"));
     }
 
-    public List<Car> findByParameter(String searchParameter) {
+    public CarListResponse findByParameter(String searchParameter) {
 
-        List<Car> items = carRepository.findByParameter(searchParameter.toLowerCase());
+        List<Car> cars = carRepository.findByParameter(searchParameter.toLowerCase());
 //        Comparator<Car> byType = Comparator.comparing(Car::getBrand);
 //        Collections.sort(items, byType);
-        return items;
+        CarListResponse carListResponse = getCarListResponse(cars);
+        return  carListResponse;
     }
 
-    public List<CarResponse> findByParameterAndOrder(String searchParameter, String orderBy) {
+    public CarListResponse findByParameterAndOrder(String searchParameter, String orderBy) {
+
         try{
             List<Car> cars = carRepository.findAll((Specification<Car>) (root, criteriaQuery, criteriaBuilder) ->{
                 Predicate predicate = criteriaBuilder.conjunction();
@@ -68,16 +72,24 @@ public class CarServiceImpl implements CarService {
                 return predicate;
             });
 
-            List<CarResponse> carResponses = new ArrayList<>();
-            for (Car car:cars) {
-                carResponses.add(getCarResponse(car));
-            }
-            return carResponses;
+            CarListResponse carListResponse = getCarListResponse(cars);
+            return carListResponse;
+
         }catch (IllegalArgumentException err){
             throw new ApiBadRequestException("Wrong Sort Parameter Specified");
         }catch (Exception err){
             throw new ApiBadRequestException("Wrong Sort Parameter Specified");
         }
+    }
+
+    private CarListResponse getCarListResponse(List<Car> cars) {
+        List<CarResponse> carResponses = new ArrayList<>();
+        for (Car car: cars) {
+            carResponses.add(getCarResponse(car));
+        }
+        CarListResponse carListResponse = new CarListResponse();
+        carListResponse.setCarResponseList(carResponses);
+        return carListResponse;
     }
 
     public CarResponse addCar(AddCarRequest addCarRequest) {
